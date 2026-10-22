@@ -1,0 +1,11 @@
+01. Carpeta de trabajo
+02. npm init -y
+03. npm install m1 m2 mN
+04. estructuras de directorios (public, src)
+05. archivos de proyecto: .env - .gitignore - README.md
+06. npx knex init (configuración manual)
+07. creamos el/los archivos de migración: npx knex migrate:make mi_archivo_migracion
+08. crea tu BD en MySQL
+09. Ejecutar la migración: npx knex migrate:latest
+10. Error migración (deshacer): npx knex migrate:rollback
+11. Archivo de semillas: npx knex seed:make nombre_archivo_semilla
