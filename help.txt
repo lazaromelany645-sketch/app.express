@@ -9,3 +9,6 @@
 09. Ejecutar la migración: npx knex migrate:latest
 10. Error migración (deshacer): npx knex migrate:rollback
 11. Archivo de semillas: npx knex seed:make nombre_archivo_semilla
+12. Ejecutar archivo de semillas: npx knex seed:run
+13. Codificación: app.js > server.js > db.js > env.js > package.json
+14.Rutas

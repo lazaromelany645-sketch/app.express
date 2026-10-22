@@ -2,10 +2,15 @@
   "name": "app-express-master",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "main": "src/server.js",
+ "scripts": {
+  "start": "node src/server.js",
+  "dev": "node --watch src/server.js",
+  "migrate": "knex migrate:latest",
+  "migrate:rollback": "knex migrate:rollback --all",
+  "seed": "knex seed:run",
+  "db_reset": "knex migrate :rollback --all && migrate:latest &&"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
