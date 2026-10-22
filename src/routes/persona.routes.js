@@ -1,12 +1,15 @@
 const router = require('express').Router()
+const c = require('../controllers/persona.controller')
 
-//JWT = limitar el uso de las rutas
-const { verifyToken, requireLevel } = require('../middlewares/auth')
+//RECUERDA:
+//Las rutas requieren las funcionalidades en los controladores
 
-//Rutas App (expandiendo según módulos)
-//Versión 1: login (público)
-router.use('/auth', require('./auth.routes'))
-router.use('/personas', verifyToken, require('./persona.routes'))
-router.use('/usuarios', verifyToken, requireLevel('ADMIN'), require('./usuario.routes'))
+//router.verbo('/ruta', controlador.accion)
+
+router.get('/') //listar
+router.get('/:id') //buscar
+router.post('/') //registrar
+router.put('/:id') //modificar
+router.delete('/:id') //eliminar
 
 module.exports = router
