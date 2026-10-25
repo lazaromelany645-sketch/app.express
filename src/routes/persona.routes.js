@@ -1,15 +1,10 @@
 const router = require('express').Router()
 const c = require('../controllers/persona.controller')
 
-//RECUERDA:
-//Las rutas requieren las funcionalidades en los controladores
-
-//router.verbo('/ruta', controlador.accion)
-
-router.get('/') //listar
-router.get('/:id') //buscar
-router.post('/') //registrar
-router.put('/:id') //modificar
-router.delete('/:id') //eliminar
+router.get('/', c.list)
+router.get('/:id', c.get)
+router.post('/', c.create)
+router.put('/:id', c.update)
+router.delete('/:id', c.remove)
 
 module.exports = router

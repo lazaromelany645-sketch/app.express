@@ -1,71 +1,56 @@
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const db = require('../config/db')
 const { httpError, requireFields } = require('../utils')
 
-//Configuración cookies
+// Hash falso: se compara igual aunque el usuario no exista (evita ataques de tiempo)
+const DUMMY_HASH = bcrypt.hashSync('clave-falsa-para-igualar-tiempos', 10)
+
+// Configuración cookies
 const cookieOpts = {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production'
+  httpOnly: true,
+  sameSite: 'lax',
+  secure: process.env.NODE_ENV === 'production'
 }
 
-//exports.metodo = async (petición, respuesta) => {}
-
 exports.login = async (req, res) => {
-    //Validación
-    requireFields(req.body, ['nombre_usuario', 'clave_acceso'])
+  requireFields(req.body, ['nombre_usuario', 'clave_acceso'])
+  const { nombre_usuario, clave_acceso } = req.body
 
-    //Deserealización
-    const { nombre_usuario, clave_acceso } = req.body
+  if (typeof nombre_usuario !== 'string' || typeof clave_acceso !== 'string')
+    throw httpError(400, 'Datos no son correctos')
 
-    //Validar el tipo de dato (seguridad XSS)
-    if (typeof nombre_usuario !== 'string' || typeof clave_acceso !== 'string'){
-        throw httpError(400, 'Datos no son correctos')
-    }
+  const user = await db('usuarios').where({ nombre_usuario }).first()
+  const valid = await bcrypt.compare(clave_acceso, user ? user.clave_acceso : DUMMY_HASH)
 
-   //Buscamos al usuario con el nombre...
-    const user = await db('usuarios').where({ nombre_usuario }).first()
-    //Evaluamos si la clave es correcta...
-    const valid = await bcrypt.compare(clave_acceso, user ? user.clave_acceso : DUMMY_HASH)
-
-    //Sino existe el usuario OR si existe pero su estado (false) OR si la clave es incorrecta
-    if (!user || !user.estado || !valid){
-    //401 NO AUTORIZADO
+  if (!user || !user.estado || !valid)
     throw httpError(401, 'Usuario o contraseña incorrecto')
-    }
 
-      //Si llegaste hasta aquí - WELCOME
-      //Habilitamos un permiso JWT
-      const token = jwt.sign({
-          id: user.id,
-          nombre_usuario: user.nombre_usuario,
-          nivel_acceso: user.nivel_acceso
-      }, process.env.JWT_SECRET, {
-          algorithm: 'HS256',
-          expiresIn: process.env.JWT_EXPIRES_IN || '8h'
-      })
+  const token = jwt.sign(
+    { id: user.id, nombre_usuario: user.nombre_usuario, nivel_acceso: user.nivel_acceso },
+    process.env.JWT_SECRET,
+    { algorithm: 'HS256', expiresIn: process.env.JWT_EXPIRES_IN || '8h' }
+  )
 
-      res.cookie('token', token, cookieOpts).json({ message: 'Bienvenido' })
-      }
+  res.cookie('token', token, cookieOpts).json({ message: 'Bienvenido' })
+}
 
-     //Cierre de sesión (destruye LOGIN)
-        exports.logout = async (req, res) => {
-        res.clearCookie('token', cookieOpts).json({ message: 'Sesión finalizada' })
-        }
+// Cierre de sesión
+exports.logout = async (req, res) => {
+  res.clearCookie('token', cookieOpts).json({ message: 'Sesión finalizada' })
+}
 
-      //Función que retorne la información completa del usuario
-      //usuario > persona
-      exports.me = async (req, res) => {
-         //Objetivo es hacer una consulta multitable para obtener los datos del usuario
-        const usuario = await db('usuarios as u')
-        .join('personas as p', 'p.id', 'u.idpersona')
-        .where('u.id', req.user.id)
-        .first()
+// Datos del usuario autenticado (sin la clave)
+exports.me = async (req, res) => {
+  const usuario = await db('usuarios as u')
+    .join('personas as p', 'p.id', 'u.idpersona')
+    .where('u.id', req.user.id)
+    .select(
+      'u.id', 'u.idpersona', 'u.nombre_usuario', 'u.nivel_acceso', 'u.estado',
+      'p.apellidos', 'p.nombres', 'p.telefono', 'p.email', 'p.direccion'
+    )
+    .first()
 
-        if (!usuario) {
-            throw httpError(404, 'Usuario no encontrado')
-        }
-
-        res.json(usuario)
-        }
+  if (!usuario) throw httpError(404, 'Usuario no encontrado')
+  res.json(usuario)
+}

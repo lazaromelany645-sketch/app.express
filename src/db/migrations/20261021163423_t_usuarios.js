@@ -4,7 +4,7 @@
  */
 exports.up = async function(knex) {
   await knex.schema.createTable("usuarios", (t) => {
-    t.increments('id').primary()
+    t.increments('id')
     t.integer('idpersona').unsigned().notNullable().references('id').inTable('personas').onDelete('RESTRICT')
     t.string('nombre_usuario', 50).notNullable().unique()
     t.string('clave_acceso', 255).notNullable()

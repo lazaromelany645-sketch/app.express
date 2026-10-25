@@ -16,6 +16,6 @@ process.exit(1)
 const secret = process.env.JWT_SECRET
 
 if (secret.length < 32){
-console.error('JSON_SECRET requiere una clave de 32 caracteres')
+console.error('JWT_SECRET requiere una clave de 32 caracteres')
 process.exit(1)
 }

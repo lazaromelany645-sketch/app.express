@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Personas</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <main>
+    <header class="card">
+      <h1 id="titulo">Personas</h1>
+      <div><span id="quien"></span> <button id="salir" class="link" type="button">Salir</button></div>
+    </header>
+
+    <form id="form" class="card">
+      <h2>Registrar persona</h2>
+      <div class="grid">
+        <div><label for="apellidos">Apellidos</label><input id="apellidos" required maxlength="100"></div>
+        <div><label for="nombres">Nombres</label><input id="nombres" required maxlength="100"></div>
+        <div><label for="email">Email</label><input id="email" type="email" required maxlength="120"></div>
+        <div><label for="telefono">Teléfono (9 dígitos)</label><input id="telefono" pattern="\d{9}" maxlength="9"></div>
+        <div><label for="direccion">Dirección</label><input id="direccion" maxlength="150"></div>
+      </div>
+      <button type="submit">Guardar</button>
+      <p id="msg" class="msg" role="alert"></p>
+    </form>
+
+    <div class="card">
+      <table>
+        <thead><tr><th>Apellidos</th><th>Nombres</th><th>Email</th><th>Teléfono</th><th></th></tr></thead>
+        <tbody id="lista"></tbody>
+      </table>
+    </div>
+  </main>
+  <script src="/js/app.js"></script>
+</body>
+</html>

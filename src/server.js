@@ -14,4 +14,7 @@ db.raw('select 1')
 .then(() => app.listen(port,
     () => console.log(`Servidor iniciado en http://localhost:${port}`)
 ))
-.catch((e) => console.error(`No se pudo realizar la conexión: ${e.message}`))
+.catch((e) => {
+    console.error(`No se pudo realizar la conexión: ${e.message}`)
+    process.exit(1)
+})

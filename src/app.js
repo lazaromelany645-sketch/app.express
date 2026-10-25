@@ -26,7 +26,7 @@ app.use(helmet({
         useDefaults: true,
         directives: {
             'style-src': ["'self'"],
-            'upgrade-insecure-request': isProd ? [] : null
+            'upgrade-insecure-requests': isProd ? [] : null
         }
     }
 }))
